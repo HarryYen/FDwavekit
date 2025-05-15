@@ -1,0 +1,11 @@
+name: modelinterp
+channels:
+  - conda-forge
+dependencies:
+  - numpy
+  - pandas
+  - python
+  - scipy
+  - pygmt
+  - pip
+  - pyyaml

@@ -1,0 +1,15 @@
+# input.yaml
+tomo_file: 'TW-PS-H14.txt'
+dx: 0.15
+dy: 0.15
+dz: 0.15
+cx: 121.7
+cy: 24.735
+x_half_len: 30.0
+y_half_len: 30.0
+z_beg: -2.1
+z_end: 100.0
+interpolation_method: 'linear'
+vector: 'vp'
+default_value: 1.5
+cores_num: 40

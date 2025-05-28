@@ -56,7 +56,7 @@ In model_main_2d.py:
     
     Now, your model will be like this:
     
-    ![image.png](FDwavekit%20Simple%20Note%20of%20Creating%20a%202D%20Synthetic%20M%20201ee83f3f1c80759c7bc842b097a1d8/image.png)
+    ![image](https://github.com/HarryYen/FDwavekit/blob/main/images/image.png)
     
 2. **put some anomalies in your model**
     
@@ -73,7 +73,7 @@ In model_main_2d.py:
     
     Result:
     
-    ![image.png](FDwavekit%20Simple%20Note%20of%20Creating%20a%202D%20Synthetic%20M%20201ee83f3f1c80759c7bc842b097a1d8/image%201.png)
+    ![image.png](https://github.com/HarryYen/FDwavekit/blob/main/images/image%201.png)
     
     Please note that you can specify a perturbation if the percentage_flag is True. 
     
@@ -88,7 +88,7 @@ In model_main_2d.py:
     
     Result:
     
-    ![image.png](FDwavekit%20Simple%20Note%20of%20Creating%20a%202D%20Synthetic%20M%20201ee83f3f1c80759c7bc842b097a1d8/image%202.png)
+    ![image.png](https://github.com/HarryYen/FDwavekit/blob/main/images/image%202.png)
     
     (2) Fault zone or oblique layer
     
@@ -103,11 +103,11 @@ In model_main_2d.py:
     
     Results:
     
-    ![image.png](FDwavekit%20Simple%20Note%20of%20Creating%20a%202D%20Synthetic%20M%20201ee83f3f1c80759c7bc842b097a1d8/image%203.png)
+    ![image.png](https://github.com/HarryYen/FDwavekit/blob/main/images/image%203.png)
     
 
 The way we create this oblique layer is like:
 
-![tutorial.png](FDwavekit%20Simple%20Note%20of%20Creating%20a%202D%20Synthetic%20M%20201ee83f3f1c80759c7bc842b097a1d8/tutorial.png)
+![tutorial.png](https://github.com/HarryYen/FDwavekit/blob/main/images/tutorial.png)
 
 Finally you will get a output file called ‘model_Vp_2d.dat’.

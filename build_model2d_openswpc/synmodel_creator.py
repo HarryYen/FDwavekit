@@ -3,9 +3,10 @@ from typing import Sequence, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.path import Path as MplPath
 from scipy.interpolate import splprep, splev
 from scipy.ndimage import gaussian_filter
+
+from model_tools import *
 
 
 class SynModelCreator:
@@ -39,11 +40,6 @@ class SynModelCreator:
         self.x_max = self.grid_size * self.nx + self.x_min
         self.z_max = self.grid_size * self.nz + self.z_min
 
-    def _grid_centers(self) -> Tuple[np.ndarray, np.ndarray]:
-        x_arr = np.arange(self.x_min, self.x_max, self.grid_size) + self.grid_size / 2
-        z_arr = np.arange(self.z_min, self.z_max, self.grid_size) + self.grid_size / 2
-        return x_arr, z_arr
-    
     def create_homogeneous_model(self) -> None:
         """
         Create an initial homogeneous model with the given parameters.
@@ -87,31 +83,17 @@ class SynModelCreator:
                                     True: NEW = OLD * (1 + new_value/100)
                                     False: NEW = new_value
         """
-        x_lo, x_hi = sorted((x_min, x_max))
-        z_lo, z_hi = sorted((z_min, z_max))
-        x_list = np.array([x_lo, x_hi, x_hi, x_lo])
-        z_list = np.array([z_lo, z_lo, z_hi, z_hi])
-        x_ii_list = (x_list - self.x_min) // self.grid_size + 1
-        z_ii_list = (z_list - self.z_min) // self.grid_size + 1
-        x1_ii, x2_ii, x3_ii, x4_ii = x_ii_list
-        z1_ii, z2_ii, z3_ii, z4_ii = z_ii_list
-        p = MplPath([(x1_ii, z1_ii), (x2_ii, z2_ii), (x3_ii, z3_ii), (x4_ii, z4_ii)])
-        scale = 1 + new_value / 100
-        for x_ii in range(self.nx):
-            for z_ii in range(self.nz):
-                is_in_rectangle = p.contains_point((x_ii, z_ii))
-                if is_in_rectangle:
-
-                    if use_percentage:
-                        self.plane_model[x_ii, z_ii] = self.plane_model[x_ii, z_ii] * scale
-                    else:
-                        self.plane_model[x_ii, z_ii] = new_value
-
-    @staticmethod
-    def find_closest_index_in_array(matrix: np.ndarray, target_value: float) -> int:
-        diff = np.abs(matrix - target_value)
-        index = np.unravel_index(np.argmin(diff), diff.shape)
-        return index[0]
+        path = rectangle_path(
+            x_min=x_min,
+            z_min=z_min,
+            x_max=x_max,
+            z_max=z_max,
+            grid_size=self.grid_size,
+            origin_x=self.x_min,
+            origin_z=self.z_min,
+        )
+        mask = polygon_mask(path, self.nx, self.nz)
+        apply_mask(self.plane_model, mask, new_value, use_percentage)
 
     def set_up_fault_zone(
         self,
@@ -136,7 +118,7 @@ class SynModelCreator:
         """
         slope = np.tan(np.deg2rad(dip_angle))
 
-        x_arr, z_arr = self._grid_centers()
+        x_arr, z_arr = grid_centers(self.x_min, self.x_max, self.z_min, self.z_max, self.grid_size)
         z_arr_index = range(self.nz)
         fault_top = slope * (-x_arr + surface_x)
         fault_bot = fault_top + app_thick
@@ -153,8 +135,8 @@ class SynModelCreator:
                     root_max = deepest_z
             
             if not ((root_min <= self.z_min and root_max <= self.z_min) or (root_min >= self.z_max and root_max >= self.z_max)):
-                root_min_ii = self.find_closest_index_in_array(z_arr, root_min)
-                root_max_ii = self.find_closest_index_in_array(z_arr, root_max)
+                root_min_ii = closest_index_in_array(z_arr, root_min)
+                root_max_ii = closest_index_in_array(z_arr, root_max)
                 
                 if (root_min_ii == z_arr_index[0] and root_max_ii == z_arr_index[0]) or (root_min_ii == z_arr_index[-1] and root_max_ii == z_arr_index[-1]):
                     continue
@@ -172,6 +154,7 @@ class SynModelCreator:
         use_percentage: bool,
         s: float,
         k: int,
+        smooth_sigma: float = 3,
         num_interpolated_points: int = 100,
     ) -> None:
         """
@@ -187,6 +170,7 @@ class SynModelCreator:
                                    If False, apply NEW = new_value.
             s (float): Spline smoothness for `splprep` (0 = exact fit, larger = smoother).
             k (int): Spline degree for `splprep` (typically 1-5).
+            smooth_sigma (float): Gaussian smoothing sigma for the mask boundary.
             num_interpolated_points (int): Number of points used to densify the spline.
         """
         
@@ -201,18 +185,14 @@ class SynModelCreator:
         x_smooth, z_smooth = splev(u_fine, tck)
         
         # Create region mask
-        polygon_path = MplPath(np.column_stack([x_smooth, z_smooth]))
-        mask = np.zeros_like(self.plane_model, dtype=bool)
-        
-        for x_ii, z_ii in np.ndindex(self.nx, self.nz):
-            if polygon_path.contains_point((x_ii, z_ii)):
-                mask[x_ii, z_ii] = True
-        
+        path = polygon_path(np.column_stack([x_smooth, z_smooth]))
+        mask = polygon_mask(path, self.nx, self.nz)
+
+        # Smooth the mask boundary
+        mask_smooth = smooth_mask(mask, smooth_sigma)
+
         # Apply new values
-        if use_percentage:
-            self.plane_model[mask] *= (1 + new_value / 100)
-        else:
-            self.plane_model[mask] = new_value
+        apply_mask(self.plane_model, mask_smooth, new_value, use_percentage)
     
     def blur_model(self, mode: str = 'nearest', sigma: float = 5) -> None:
         """
@@ -232,8 +212,8 @@ class SynModelCreator:
         self.nx += 6
         self.nz += 6
 
-    def output_2d(self) -> None:
-        output_path = self.output_dir / 'model_Vp_2d.dat'
+    def output_2d(self, filename: str = 'model_Vp_2d.dat') -> None:
+        output_path = self.output_dir / filename
         print(self.nx, self.nz)
         with open(output_path, 'w+') as f:
             for ii in range(self.nx):

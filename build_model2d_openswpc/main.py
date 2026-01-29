@@ -19,6 +19,7 @@ class ModelConfig:
         layered_model_file (str): file name of the layered model (the format should be the same with ak135.csv)
         input_dir (str): folder for initial 1D velocity model files
         output_dir (str): folder for model outputs
+        output_filename (str): output filename for the 2D model
     """
     nx: int = 250
     nz: int = 388
@@ -32,6 +33,7 @@ class ModelConfig:
     
     input_dir: str = 'input'
     output_dir: str = 'output'
+    output_filename: str = 'model_Vp_2d.dat'
 
 
 def main() -> None:
@@ -77,7 +79,7 @@ def main() -> None:
    
    
     # Gaussian to blur the boundary.
-    # synmodel_creator.blur_model(mode='nearest', sigma=5)
+    synmodel_creator.blur_model(mode='nearest', sigma=1)
 
     # -----------------------------------------------------------------------------
     # Post-processing.
@@ -86,7 +88,7 @@ def main() -> None:
     synmodel_creator.finalize_model()
     
     print('writing file...')
-    synmodel_creator.output_2d()
+    synmodel_creator.output_2d(filename=config['output_filename'])
     synmodel_creator.visualizing_array(vmin=1, vmax=10, label_name='Vp')
 
     

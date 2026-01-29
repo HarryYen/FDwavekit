@@ -153,7 +153,7 @@
   topo_flatten     = .false.          !! Force topography variation to zero (formerly is_flatten)
   munk_profile     = .false.           !! velocity gradient inside the seawater column
   earth_flattening = .false.          !! Earth-flattening tranformation
-  zero_topo        = .true.           !! added by Hung-Yu Yen. For zero topography.
+  zero_topo        = .true.           !! For zero topography.
   user_Vp          = .true.
   user_rho         = .false.
   topo_dir         = './test01/3dtopo_re.xyz'

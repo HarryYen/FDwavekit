@@ -64,23 +64,23 @@ In model_main_2d.py:
     
     ```python
        synmodel_creator.set_up_rectangle(
-            x1 = -20, z1 = 20, x2 = 20, z2 = 20, x3 = 20, z3 = 40, x4 = -20, z4 = 40,  
-            new_value = 7., percentage_flag = False
+            x_min = -20, z_min = 20, x_max = 20, z_max = 40,
+            new_value = 7., use_percentage = False
         )
     ```
     
-    x1-x4, z1-z2: the position of your 4 points specifying the rectangle.
+    x_min, z_min, x_max, z_max: the position of two opposite corners.
     
     Result:
     
     ![image.png](https://github.com/HarryYen/FDwavekit/blob/main/images/image%201.png)
     
-    Please note that you can specify a perturbation if the percentage_flag is True. 
+    Please note that you can specify a perturbation if use_percentage is True. 
     
     ```python
         synmodel_creator.set_up_rectangle(
-            x1 = -20, z1 = 20, x2 = 20, z2 = 20, x3 = 20, z3 = 40, x4 = -20, z4 = 40,  
-            new_value = 7., percentage_flag = True
+            x_min = -20, z_min = 20, x_max = 20, z_max = 40,
+            new_value = 7., use_percentage = True
         )
     ```
     
@@ -98,7 +98,7 @@ In model_main_2d.py:
                                            deepest_z = 40., 
                                            app_thick = 10., 
                                            specified_value = 8., 
-                                           percentage_flag = False)
+                                           use_percentage = False)
     ```
     
     Results:

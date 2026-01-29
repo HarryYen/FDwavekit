@@ -1,19 +1,12 @@
 #%%
-from scipy.ndimage import gaussian_filter
+from dataclasses import asdict, dataclass
+import time
+import numpy as np
 from synmodel_creator import SynModelCreator
 
-import numpy as np
-import matplotlib.pyplot as plt
-import sys
-import time
 
-
-def main():
-    
-    # ------------------------------------------------------------
-    # Setting up the parameters 
-    # (Please be the same as the one in the OpenSWPC)
-    # ------------------------------------------------------------
+@dataclass
+class ModelConfig:
     """
     Args:
         nx (int): number of grid points in x direction
@@ -27,69 +20,69 @@ def main():
         input_dir (str): folder for initial 1D velocity model files
         output_dir (str): folder for model outputs
     """
-    config = {
-        'nx': 250,
-        'nz': 388,
-        'initial_vel': 10, # km/s
-        'grid_size': 0.4, # km
-        'x_min': -40.0,
-        'z_min': -5.0,
-        'specify_layered_model': True,
-        'layered_model_file': 'ak135.csv',
-        'input_dir': 'input',
-        'output_dir': 'output'
-    }
-    # ------------------------------------------------------------
+    nx: int = 250
+    nz: int = 388
+    grid_size: float = 0.4  # km
+    x_min: float = -40.0
+    z_min: float = -5.0
+    
+    initial_vel: float = 10.0  # km/s
+    specify_layered_model: bool = True
+    layered_model_file: str = 'ak135.csv'
+    
+    input_dir: str = 'input'
+    output_dir: str = 'output'
+
+
+def main() -> None:
+    
+    # Model parameters (match your OpenSWPC settings).
+    config = asdict(ModelConfig())
     
     synmodel_creator = SynModelCreator(config)
-    
 
-    # --------------------------------------------------------- #
-    # --------------- Initializing the array ------------------ #
-    # --------------------------------------------------------- #
+    # Initialize the array.
     synmodel_creator.create_homogeneous_model()
-    
-    # --------------------------------------------------------- #
-    # ------------------ Design your model -------------------- #
-    # --------------------------------------------------------- #
+
+    # Design your model.
     if config['specify_layered_model']:
-        # specify the layered model
         synmodel_creator.set_up_layered_structure()
-    # --------------------------------------------------------- #
-    # -------------specify your own structures----------------- #
-    # --------------------------------------------------------- #
-    # synmodel_creator.set_up_fault_zone(surface_x = -20,
-    #                                    dip_angle = 20, 
-    #                                    deepest_z = 40., 
-    #                                    app_thick = 10., 
-    #                                    specified_value = 8., 
-    #                                    percentage_flag = False)
+
+    # Specify your own structures.
+    synmodel_creator.set_up_fault_zone(surface_x = -20,
+                                       dip_angle = 20, 
+                                       deepest_z = 40., 
+                                       app_thick = 10., 
+                                       specified_value = 8., 
+                                       use_percentage = False)
     
     ### create a rectangle area
-    # High-velocity boundary
-    # synmodel_creator.set_up_rectangle(
-    #     x1 = -20, z1 = 20, x2 = 20, z2 = 20, x3 = 20, z3 = 40, x4 = -20, z4 = 40,  
-    #     new_value = 7.2, percentage_flag = False
-    # )
+    synmodel_creator.set_up_rectangle(
+        x_min = -20, z_min = 20, x_max = 20, z_max = 40,
+        new_value = 7.2, use_percentage = False
+    )
 
-    # irregular_x = np.array([-15,  13., 12.5,    8,     5,     5,   -14, -16,  -14])
-    # irregular_z = np.array([42.5, 42.5, 60.5, 67.5,  75.5, 98.5, 98.5,  60, 42.5])
-    # irregular_z = irregular_z - 17.5
-    # points = list(zip(irregular_x, irregular_z))
-    # synmodel_creator.set_up_irregular_zone(points=points, 
-    #                                        new_value=11.3, percentage_flag=True, 
-    #                                        smooth_sigma=10, num_interpolated_points=100,
-    #                                        s=1000, k=3)
+    # Demo: irregular zone (comment out if not needed).
+    irregular_x = np.array([-20, -20, 20, 20])
+    irregular_z = np.array([60, 80, 80, 60])
+    points = list(zip(irregular_x, irregular_z))
+    synmodel_creator.set_up_irregular_zone(
+        points=points,
+        new_value=-50,
+        use_percentage=True,
+        num_interpolated_points=100,
+        s=3,
+        k=3,
+    )
    
    
-    # Gaussian to blur the boundary
+    # Gaussian to blur the boundary.
     # synmodel_creator.blur_model(mode='nearest', sigma=5)
-    # --------------------------------------------------------- #
-    # -----------------------Post-Processing------------------- #
-    # --------------------------------------------------------- #
-    
-    
+
+    # -----------------------------------------------------------------------------
+    # Post-processing.
     # padding 3 columns to the array for OpenSWPC reading (should NOT be ignored!)
+    # -----------------------------------------------------------------------------
     synmodel_creator.finalize_model()
     
     print('writing file...')
@@ -101,10 +94,10 @@ def main():
 
 
 if __name__ == '__main__':
-    start = time.time()
+    start = time.perf_counter()
     # ------------------------- 
     main()
     # -------------------------
-    end = time.time()
-    print(f'done! total time = {end-start:.1f}s')
+    elapsed = time.perf_counter() - start
+    print(f'done! total time = {elapsed:.1f}s')
 # %%

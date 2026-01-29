@@ -1,0 +1,12 @@
+name: fdwavekit
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - scipy
+  - matplotlib
+  - pandas
+  - pygmt
+  - pyyaml
+  - pip

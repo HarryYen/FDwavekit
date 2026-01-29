@@ -24,16 +24,20 @@ def main():
         z_min (float): minimum z coordinate in km
         specify_layered_model (bool): whether to specify a layered model (if False, the model will be a constant velocity model with initial_vel)
         layered_model_file (str): file name of the layered model (the format should be the same with ak135.csv)
+        input_dir (str): folder for initial 1D velocity model files
+        output_dir (str): folder for model outputs
     """
     config = {
-        'nx': 2500,
-        'nz': 3875,
+        'nx': 250,
+        'nz': 388,
         'initial_vel': 10, # km/s
-        'grid_size': 0.04, # km
+        'grid_size': 0.4, # km
         'x_min': -40.0,
         'z_min': -5.0,
         'specify_layered_model': True,
-        'layered_model_file': 'ak135.csv'
+        'layered_model_file': 'ak135.csv',
+        'input_dir': 'input',
+        'output_dir': 'output'
     }
     # ------------------------------------------------------------
     
@@ -54,19 +58,19 @@ def main():
     # --------------------------------------------------------- #
     # -------------specify your own structures----------------- #
     # --------------------------------------------------------- #
-    synmodel_creator.set_up_fault_zone(surface_x = -20,
-                                       dip_angle = 20, 
-                                       deepest_z = 40., 
-                                       app_thick = 10., 
-                                       specified_value = 8., 
-                                       percentage_flag = False)
+    # synmodel_creator.set_up_fault_zone(surface_x = -20,
+    #                                    dip_angle = 20, 
+    #                                    deepest_z = 40., 
+    #                                    app_thick = 10., 
+    #                                    specified_value = 8., 
+    #                                    percentage_flag = False)
     
     ### create a rectangle area
     # High-velocity boundary
-    synmodel_creator.set_up_rectangle(
-        x1 = -20, z1 = 20, x2 = 20, z2 = 20, x3 = 20, z3 = 40, x4 = -20, z4 = 40,  
-        new_value = 7.2, percentage_flag = False
-    )
+    # synmodel_creator.set_up_rectangle(
+    #     x1 = -20, z1 = 20, x2 = 20, z2 = 20, x3 = 20, z3 = 40, x4 = -20, z4 = 40,  
+    #     new_value = 7.2, percentage_flag = False
+    # )
 
     # irregular_x = np.array([-15,  13., 12.5,    8,     5,     5,   -14, -16,  -14])
     # irregular_z = np.array([42.5, 42.5, 60.5, 67.5,  75.5, 98.5, 98.5,  60, 42.5])
@@ -79,7 +83,7 @@ def main():
    
    
     # Gaussian to blur the boundary
-    synmodel_creator.blur_model(mode='nearest', sigma=5)
+    # synmodel_creator.blur_model(mode='nearest', sigma=5)
     # --------------------------------------------------------- #
     # -----------------------Post-Processing------------------- #
     # --------------------------------------------------------- #

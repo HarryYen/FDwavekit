@@ -1,4 +1,5 @@
 from matplotlib.path import Path
+from pathlib import Path as FilePath
 from scipy.interpolate import splprep, splev
 from scipy.ndimage import gaussian_filter
 import numpy as np
@@ -14,7 +15,17 @@ class SynModelCreator:
         self.x_min = config['x_min']
         self.z_min = config['z_min']
         self.specify_layered_model = config['specify_layered_model']
-        self.layered_model_file = config['layered_model_file']
+        self.input_dir = FilePath(config.get('input_dir', '.'))
+        self.output_dir = FilePath(config.get('output_dir', '.'))
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        layered_model_file = config['layered_model_file']
+        layered_model_path = FilePath(layered_model_file)
+        if not layered_model_path.is_absolute():
+            candidate_path = self.input_dir / layered_model_file
+            if candidate_path.exists():
+                layered_model_path = candidate_path
+        self.layered_model_file = str(layered_model_path)
 
         # init 
         self.get_xz_max()
@@ -191,12 +202,12 @@ class SynModelCreator:
         self.nz += 6
 
     def output_2d(self):
-        f = open(f'model_Vp_2d.dat', 'w+')
+        output_path = self.output_dir / 'model_Vp_2d.dat'
         print(self.nx, self.nz)
-        for ii in range(self.nx):
-            for kk in range(self.nz):
-                f.write(f'{self.plane_model[ii, kk]:.3f}\n')
-        f.close()
+        with open(output_path, 'w+') as f:
+            for ii in range(self.nx):
+                for kk in range(self.nz):
+                    f.write(f'{self.plane_model[ii, kk]:.3f}\n')
 
     def visualizing_array(self, vmin, vmax, label_name):
         fig, ax = plt.subplots(1,1, figsize=(5,5))
@@ -205,4 +216,4 @@ class SynModelCreator:
         plt.ylabel('Z(km)')
         cbar = plt.colorbar(im, shrink=.4)
         cbar.set_label(label_name)
-        fig.savefig('XZ.png', dpi=300)
+        fig.savefig(self.output_dir / 'XZ.png', dpi=300)

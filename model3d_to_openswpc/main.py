@@ -9,7 +9,15 @@ import sys
 
 from functools import partial
 from scipy.interpolate import RegularGridInterpolator
-from model_preparation.module_interp3d_2 import *
+from model_preparation import (
+    arange_z_arr,
+    len_to_grid_number,
+    load_config,
+    output,
+    parallel_create_final_arr,
+    project_hor_and_vert_lines,
+    tomo_to_array,
+)
 
 
 if __name__ == '__main__':

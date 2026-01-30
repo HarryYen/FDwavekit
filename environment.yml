@@ -10,3 +10,5 @@ dependencies:
   - pygmt
   - pyyaml
   - pip
+  - pygmt=0.9.0
+  - xarray

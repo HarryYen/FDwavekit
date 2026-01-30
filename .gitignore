@@ -4,4 +4,11 @@ model*.dat
 *pyc
 output/
 
+# Fortran-build files
+*.o
+*.mod
+
+# utils
+utils/**/*.png
+
 **/out/

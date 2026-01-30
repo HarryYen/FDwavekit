@@ -1,0 +1,5 @@
+25 0 0 st01 fsb
+50 0 0 st02 fsb
+75 0 0 st03 fsb
+100 0 0 st04 fsb
+125 0 0 st05 fsb

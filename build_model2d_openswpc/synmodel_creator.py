@@ -20,6 +20,7 @@ class SynModelCreator:
         self.x_min = config['x_min']
         self.z_min = config['z_min']
         self.specify_layered_model = config['specify_layered_model']
+        self.layered_model_interpolation = config.get('layered_model_interpolation', 'step')
         self.input_dir = Path(config.get('input_dir', '.'))
         self.output_dir = Path(config.get('output_dir', '.'))
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -54,13 +55,29 @@ class SynModelCreator:
         dep_values = vel_data[:, 0]
         vel_values = vel_data[:, 1]
         nonzero_min = np.min(vel_values[np.nonzero(vel_values)])
+        vel_values = np.where(vel_values == 0.0, nonzero_min, vel_values)
+
+        order = np.argsort(dep_values)
+        dep_values = dep_values[order]
+        vel_values = vel_values[order]
+
+        mode = str(self.layered_model_interpolation).lower()
+        if mode == 'linear':
+            _, z_arr = grid_centers(self.x_min, self.x_max, self.z_min, self.z_max, self.grid_size)
+            vel_profile = np.interp(
+                z_arr,
+                dep_values,
+                vel_values,
+                left=vel_values[0],
+                right=vel_values[-1],
+            )
+            self.plane_model[:, :] = vel_profile
+            return
         
         for ii, dep in enumerate(dep_values):
             if dep >= self.z_max:
                 break
             vel = vel_values[ii]
-            if vel == 0.0:
-                vel = nonzero_min
             dep_ii = int(np.ceil(round(dep - self.z_min, 4) / self.grid_size))
             dep_ii = max(dep_ii, 0)
             self.plane_model[:, dep_ii:] = vel

@@ -17,6 +17,7 @@ class ModelConfig:
         z_min (float): minimum z coordinate in km
         specify_layered_model (bool): whether to specify a layered model (if False, the model will be a constant velocity model with initial_vel)
         layered_model_file (str): file name of the layered model (the format should be the same with ak135.csv)
+        layered_model_interpolation (str): interpolation mode for layered model ('step' or 'linear')
         input_dir (str): folder for initial 1D velocity model files
         output_dir (str): folder for model outputs
         output_filename (str): output filename for the 2D model
@@ -30,10 +31,11 @@ class ModelConfig:
     initial_vel: float = 10.0  # km/s
     specify_layered_model: bool = True
     layered_model_file: str = 'testvs.csv'
+    layered_model_interpolation: str = 'linear'
     
     input_dir: str = 'input'
     output_dir: str = 'output'
-    output_filename: str = 'model_Vp_2d.dat'
+    output_filename: str = 'model_2d.dat'
 
 
 def main() -> None:
@@ -89,7 +91,7 @@ def main() -> None:
     
     print('writing file...')
     synmodel_creator.output_2d(filename=config['output_filename'])
-    synmodel_creator.visualizing_array(vmin=1, vmax=10, label_name='Vp')
+    synmodel_creator.visualizing_array(vmin=1, vmax=10, label_name='Value')
 
     
  

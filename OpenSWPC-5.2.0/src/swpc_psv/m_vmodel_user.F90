@@ -71,14 +71,15 @@ contains
     real(SP) :: vp1, vs1
     real(SP) :: dum
     logical  :: use_munk, earth_flattening
+    logical  :: use_user_vp, use_user_rho, use_topo
     real(SP) :: zs(k0:k1) ! spherical depth for earth_flattening
     real(SP) :: Cv(k0:k1) ! velocity scaling coefficient for earth_flattening  
     real(SP) :: Vp, Vs, rho_user
     integer ::  Qp_user
     integer :: error, line
     integer :: nx, nz
-    real(SP) :: topo_user
-    character(len=80) :: V_model_dir, Qp_model_dir, rho_model_dir, topo_dir
+    real(SP) :: topo
+    character(len=80) :: vp_model_dir, vs_model_dir, rho_model_dir, Qp_model_dir, topo_dir
     !! ----
 
     !!
@@ -97,9 +98,14 @@ contains
     call readini( io_prm, 'topo0', topo0, 0.0 )
     call readini( io_prm, 'nx',    nx, 1000)
     call readini( io_prm, 'nz',    nz, 1000)
-    call readini( io_prm, 'v_model_dir', v_model_dir, '/home/data' )
-    call readini( io_prm, 'topo_dir', topo_dir, '/home/data' )
-    !call readini( io_prm, 'rho_model_dir', rho_model_dir, '/home/data' )
+    call readini( io_prm, 'vp_model_dir', vp_model_dir, '.' )
+    call readini( io_prm, 'vs_model_dir', vs_model_dir, '.' )
+    call readini( io_prm, 'rho_model_dir', rho_model_dir, '.' )
+    call readini( io_prm, 'topo_dir', topo_dir, '.' )
+    call readini( io_prm, 'use_user_vp', use_user_vp, .false. )
+    call readini( io_prm, 'use_user_rho', use_user_rho, .false. )
+    call readini( io_prm, 'use_topo', use_topo, .false. )
+
     !call readini( io_prm, 'Qp_model_dir', Qp_model_dir, '/home/data' )
     
     !! seawater
@@ -124,32 +130,59 @@ contains
     !! The medium parameter must be set from given region (i0:i1, k0:k1)
     !! Note that the order of indices is k->i, for improving performance
     !! 
-    open(2021, file=v_model_dir, status = 'OLD', form = 'formatted',&
+    open(2021, file=vs_model_dir, status = 'OLD', form = 'formatted',&
     access = 'direct', recl=6)
-    !open(2022, file=rho_model_dir, status = 'OLD', form = 'formatted',&
-    !access = 'direct', recl=5)
-    !open(2023, file=Qp_model_dir, status = 'OLD', form = 'formatted',&
-    !access = 'direct', recl=5)
-    open(2023, file= topo_dir, status = 'OLD', form = 'formatted',&
-    access = 'direct', recl=6)
+    
+    if ( use_user_vp ) then
+      open(2022, file=vp_model_dir, status = 'OLD', form = 'formatted',&
+      access = 'direct', recl=6)
+    end if
+    
+    if ( use_user_rho ) then
+      open(2023, file=rho_model_dir, status = 'OLD', form = 'formatted',&
+      access = 'direct', recl=6) 
+    end if
+    
+    if ( use_topo ) then
+      open(2024, file= topo_dir, status = 'OLD', form = 'formatted',&
+      access = 'direct', recl=6)
+    end if
+    
+    
+    
     do i = i0, i1
 
       !! define topography shape here
-      read(2023, fmt='(F4.3)', rec=i+3)topo_user
-      bd(i,0) = topo_user * (-1)
-      !bd(i,0) = topo0
+      if ( use_topo ) then
+        read(2024, fmt='(F4.3)', rec=i+3)topo
+        bd(i,0) = topo * (-1)
+      else
+        bd(i,0) = topo0
+      end if
+      
+      
       do k = k0, k1
 
         if( zs( k ) > bd(i,0) ) then
 
           line = (i + 2) * (nz + 6) + (k + 3)
-          read(2021,fmt="(F4.3)", rec=line, IOSTAT=error)Vs
-          !read(2022,fmt="(F4.2)", rec=line, IOSTAT=error)rho_user
-          !read(2023,fmt="(I4)", rec=line, IOSTAT=error)Qp_user
-          !write(*,"(I4)")Qp_user
+          read(2021, fmt="(F4.3)", rec=line, IOSTAT=error)Vs
+
+          if ( use_user_vp ) then
+            read(2022, fmt="(F4.3)", rec=line, IOSTAT=error)Vp
+          else
+            Vp = Vs * sqrt(3.0)
+          end if
+
+          if ( use_user_rho ) then
+            read(2023, fmt="(F4.3)", rec=line, IOSTAT=error)rho_user
+          else
+            rho_user = rho0  
+          end if
+
           !! elastic medium
-          rho(k,i) = rho0
-          Vp = Vs * sqrt(3.0)
+          rho(k,i) = rho_user
+
           vp1 = Cv(k) * Vp
           vs1 = Cv(k) * Vs
           !if ( vs1 < 1.0 ) then
@@ -206,8 +239,18 @@ contains
     dum = zc(k0)
     dum = vcut
     close(2021)
-    !close(2022)
-    !close(2023)
+   
+    if ( use_user_vp ) then
+      close(2022)
+    end if
+   
+    if ( use_user_rho ) then
+      close(2023)
+    end if
+   
+    if (use_topo ) then  
+      close(2024)
+    end if
 
   end subroutine vmodel_user
   !! --------------------------------------------------------------------------------------------------------------------------- !!

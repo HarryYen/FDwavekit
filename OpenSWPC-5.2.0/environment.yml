@@ -1,0 +1,15 @@
+name: openswpc
+channels:
+  - conda-forge
+dependencies:
+  - fortran-compiler
+  - c-compiler
+  - cxx-compiler
+  - openmpi
+
+  # NetCDF stack
+  - netcdf4
+  - netcdf-fortran
+  - hdf5
+  - zlib
+

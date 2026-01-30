@@ -3,3 +3,5 @@ model*.dat
 *model*dat
 *pyc
 output/
+
+**/out/

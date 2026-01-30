@@ -1,0 +1,4 @@
+# 'xy': x, y, z, T0 , TR , fx, fy, fz
+# 'll': lon, lat , z, T0, TR , fx, fy , fz
+
+50 0 0.001  0 10. 0. 0. 1E+10

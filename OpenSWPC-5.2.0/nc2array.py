@@ -25,8 +25,8 @@ def pygmt_plot(fig, arr):
     vmin, vmax = arr.min().item(), arr.max().item()
     fig.basemap(
         region=[xmin, xmax, zmin, zmax],
-        projection='x1c/-1c',
-        frame=["a1f1", "WSne", "x+lX(km)", "y+ldepth(km)"],
+        projection='x0.1c/-0.1c',
+        frame=["a10f10", "WSne", "x+lX(km)", "y+ldepth(km)"],
     )
     pygmt.makecpt(
         cmap = 'turbo',
@@ -44,7 +44,7 @@ def pygmt_plot(fig, arr):
     fig.show()
 
 # ---------- PARAMETER ---------- #
-nc_file = '/home/harry/Work/OpenSWPC-5.2.0/input_files_2d/MiDAS/ML_right_sf/out/ML_right_sf.xz.v.nc'
+nc_file = 'input_files/test2d/out/test2d.xz.v.nc'
 # --------------------------------#
 
 if __name__ == '__main__':
@@ -55,3 +55,5 @@ if __name__ == '__main__':
     for arr in [vp_arr, vs_arr]:
         fig = pygmt_begin()
         fig = pygmt_plot(fig, arr)
+
+# %%

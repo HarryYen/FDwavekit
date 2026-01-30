@@ -21,15 +21,15 @@ class ModelConfig:
         output_dir (str): folder for model outputs
         output_filename (str): output filename for the 2D model
     """
-    nx: int = 250
-    nz: int = 388
+    nx: int = 150
+    nz: int = 100
     grid_size: float = 0.4  # km
-    x_min: float = -40.0
+    x_min: float = 0.
     z_min: float = -5.0
     
     initial_vel: float = 10.0  # km/s
     specify_layered_model: bool = True
-    layered_model_file: str = 'ak135.csv'
+    layered_model_file: str = 'testvs.csv'
     
     input_dir: str = 'input'
     output_dir: str = 'output'
@@ -51,35 +51,35 @@ def main() -> None:
         synmodel_creator.set_up_layered_structure()
 
     # Specify your own structures.
-    synmodel_creator.set_up_fault_zone(surface_x = -20,
-                                       dip_angle = 20, 
-                                       deepest_z = 40., 
-                                       app_thick = 10., 
-                                       specified_value = 8., 
-                                       use_percentage = False)
+    # synmodel_creator.set_up_fault_zone(surface_x = -20,
+    #                                    dip_angle = 20, 
+    #                                    deepest_z = 40., 
+    #                                    app_thick = 10., 
+    #                                    specified_value = 8., 
+    #                                    use_percentage = False)
     
     ### create a rectangle area
-    synmodel_creator.set_up_rectangle(
-        x_min = -20, z_min = 20, x_max = 20, z_max = 40,
-        new_value = 7.2, use_percentage = False
-    )
+    # synmodel_creator.set_up_rectangle(
+    #     x_min = -20, z_min = 20, x_max = 20, z_max = 40,
+    #     new_value = 7.2, use_percentage = False
+    # )
 
-    # Demo: irregular zone (comment out if not needed).
-    irregular_x = np.array([-20, -20, 20, 20])
-    irregular_z = np.array([60, 80, 80, 60])
-    points = list(zip(irregular_x, irregular_z))
-    synmodel_creator.set_up_irregular_zone(
-        points=points,
-        new_value=-50,
-        use_percentage=True,
-        num_interpolated_points=100,
-        s=3,
-        k=3,
-    )
+    # # Demo: irregular zone (comment out if not needed).
+    # irregular_x = np.array([-20, -20, 20, 20])
+    # irregular_z = np.array([60, 80, 80, 60])
+    # points = list(zip(irregular_x, irregular_z))
+    # synmodel_creator.set_up_irregular_zone(
+    #     points=points,
+    #     new_value=-50,
+    #     use_percentage=True,
+    #     num_interpolated_points=100,
+    #     s=3,
+    #     k=3,
+    # )
    
    
-    # Gaussian to blur the boundary.
-    synmodel_creator.blur_model(mode='nearest', sigma=1)
+    # # Gaussian to blur the boundary.
+    # synmodel_creator.blur_model(mode='nearest', sigma=1)
 
     # -----------------------------------------------------------------------------
     # Post-processing.

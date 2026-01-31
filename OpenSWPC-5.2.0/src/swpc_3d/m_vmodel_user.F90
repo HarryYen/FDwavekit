@@ -74,8 +74,8 @@ contains
     real(SP) :: Vp, Vs
     real(SP) :: vp1, vs1
     real(SP) :: dum
-    logical  :: use_munk, earth_flattening, zero_topo
-    logical  :: user_Vp, user_rho
+    logical  :: use_munk, earth_flattening, use_topo
+    logical  :: use_user_vp, use_user_rho
     real(SP) :: zs(k0:k1) ! spherical depth for earth_flattening
     real(SP) :: Cv(k0:k1) ! velocity scaling coefficient for earth_flattening
     real(SP) :: clon, clat, phi, new_lat, new_lon
@@ -128,16 +128,16 @@ contains
     end if
 
     
-    call readini( io_prm, 'user_Vp', user_Vp, .false. )
-    call readini( io_prm, 'user_rho', user_rho, .false. )
+    call readini( io_prm, 'use_user_vp', use_user_vp, .false. )
+    call readini( io_prm, 'use_user_rho', use_user_rho, .false. )
 
-    if( user_Vp ) then
+    if( use_user_Vp ) then
       call readini( io_prm, 'vp_model_dir', vp_model_dir, '/home/harry' )
       open(2019, file=vp_model_dir, status = 'OLD', form = 'formatted',&
            access = 'direct', recl=6)
     end if
     
-    if( user_rho ) then  
+    if( use_user_rho ) then  
       call readini( io_prm, 'rho_model_dir', rho_model_dir, '/home/harry' )
       open(2020, file=rho_model_dir, status = 'OLD', form = 'formatted',&
            access = 'direct', recl=6)
@@ -148,8 +148,8 @@ contains
          access = 'direct', recl=6)
     
     !! read topo file by harry
-    call readini( io_prm, 'zero_topo', zero_topo, .true. )
-    if ( .not. ( zero_topo ) ) then
+    call readini( io_prm, 'use_topo', use_topo, .true. )
+    if ( use_topo ) then
       open(2022, file=topo_dir, status = 'OLD', form = 'formatted',&
       access = 'direct', recl=11)
     end if    
@@ -161,7 +161,7 @@ contains
       do i = i0, i1
 
         !! define topography shape here
-        if ( zero_topo ) then
+        if ( .not. ( use_topo ) ) then
           bd(i,j,0) = topo0
         else  
           line_topo = (j + 2) * (nx + 6) + (i + 3)
@@ -175,17 +175,26 @@ contains
             line_tomo = (j+2)*(nx+6)*(nz+6) + (i+2)*(nz+6) + (k+3)
             
             read(2021,fmt="(F5.3)", rec=line_tomo, IOSTAT=error)Vs
-            if ( user_Vp ) then
+            if ( Vs < vcut ) then
+              Vs = vcut
+            end if 
+            if ( use_user_vp ) then
               read(2019,fmt="(F5.3)", rec=line_tomo, IOSTAT=error)Vp
             else     
               Vp = Vs * sqrt(3.0)
               !Vp = 0.9409+2.0947*Vs-0.8206*(Vs**2)+0.2683*(Vs**3)-0.0251*(Vs**4)
             end if
+
+            !! Increase the velocity lower than vcut
+            if ( Vp < vcut ) then
+              Vp = vcut
+            end if 
+
             !! elastic medium
             vp1 = Cv(k) * Vp
             vs1 = Cv(k) * Vs
             
-            if ( user_rho ) then
+            if ( use_user_rho ) then
               read(2020,fmt="(F5.3)", rec=line_tomo, IOSTAT=error)rho(k,i,j)
             else 
               rho(k,i,j) = 1.6612*Vp-0.4721*Vp**2+0.0671*Vp**3-0.0043*Vp**4+0.000106*Vp**5
@@ -254,7 +263,7 @@ contains
     dum = xc(i0)
     dum = yc(j0)
     dum = zc(k0)
-    dum = vcut
+    ! dum = vcut
 
   end subroutine vmodel_user
   !! --------------------------------------------------------------------------------------------------------------------------- !!

@@ -9,9 +9,10 @@ import os
 # Parameters
 # ----------------------------------------
 work_dir = '../../OpenSWPC-5.2.0/input_files'
-project_name = 'test2d'
+project_name = 'test2d_eq'
 wavefield_type = 'Vz'
 nc_f = os.path.join(work_dir, project_name, 'out', f'{project_name}.xz.v.nc')
+mul = 5
 # ----------------------------------------
 
     
@@ -35,20 +36,21 @@ region = [xmin, xmax, zmin, zmax]
 region_show = region
 print(region_show)
 
-t_text_loc = [xmin + (xmax-xmin)*0.1, zmin + (zmax-zmin)*0.1]
+t_text_loc = [xmin + (xmax-xmin)*0.02, zmin + (zmax-zmin)*0.02]
 
 for it, t_value in enumerate(ds.t.values):
 
     fig = pygmt.Figure()
     fig.basemap(
         region     = region,
-        projection = 'x1c/-1c',
-        frame=["WSne", "xa2f1", "ya1f1","x+lX(km)","y+lDepth(km)"],
+        projection = 'x0.25c/-0.25c',
+        frame=["WSne", "xa10f10", "ya10f10","x+lX(km)","y+lDepth(km)"],
     )
     print(f't={t_value}')
     
     
     vz_data = ds[wavefield_type].isel(t=it).load()
+    vz_data = vz_data * mul
     print(vz_data)
     
 
@@ -72,7 +74,7 @@ for it, t_value in enumerate(ds.t.values):
             y = t_text_loc[1],
             fill = 'gray',
             justify = 'CM',
-            font = '8p,Helvetica-Bold'
+            font = '14p,Helvetica-Bold'
     )
     
     

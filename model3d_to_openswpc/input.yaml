@@ -7,9 +7,9 @@ cx: 121.7
 cy: 24.735
 x_half_len: 30.0
 y_half_len: 30.0
-z_beg: -2.1
+z_beg: -3.
 z_end: 100.0
 interpolation_method: 'linear'
-vector: 'vp'
+vector: 'vs'
 default_value: 1.5
 cores_num: 2

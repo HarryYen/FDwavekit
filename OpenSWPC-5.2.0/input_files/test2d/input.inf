@@ -158,7 +158,7 @@
   use_user_rho         = .false.
   topo_dir         = './test2d/topo_2d.dat'
   vp_model_dir     = '.'
-  vs_model_dir     = './test2d/model_Vp_2d.dat'
+  vs_model_dir     = './test2d/model_Vs_2d.dat'
   rho_model_dir    = '.'
     !! --------------------------------------------------------------------- !!
     !! For uniform velocity model 'uni'

@@ -145,7 +145,7 @@ contains
     
     if ( use_topo ) then
       open(2024, file= topo_dir, status = 'OLD', form = 'formatted',&
-      access = 'direct', recl=6)
+      access = 'direct', recl=11)
     end if
     
     
@@ -154,8 +154,8 @@ contains
 
       !! define topography shape here
       if ( use_topo ) then
-        read(2024, fmt='(F4.3)', rec=i+3)topo
-        bd(i,0) = topo * (-1)
+        read(2024, fmt='(F10.3)', rec=i+3)topo
+        bd(i,0) = topo / 1000.
       else
         bd(i,0) = topo0
       end if

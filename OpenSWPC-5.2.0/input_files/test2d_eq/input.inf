@@ -20,7 +20,7 @@
   !! Model/Grid Size and Area
   !!
 
-  nproc_x          = 4               !! parallelization in x-dir
+  nproc_x          = 2               !! parallelization in x-dir
   nproc_y          = 1                !! parallelization in x-dir
   nx               = 150              !! total grid number in x-dir
   ny               = 0              !! total grid number in y-dir
@@ -35,14 +35,14 @@
   vcut             = 0.9              !! minimum velocity
                                       !- smaller velocities will be increased
 
-  xbeg             = 0.            !! minimum in x-dir
+  xbeg             = -30.            !! minimum in x-dir
   ybeg             = 0            !! minimum in y-dir
   zbeg             = -5            !! minimum in z-dir
   tbeg             = 0              !! start time
 
-  clon             = 121.625         !! center longitude
-  clat             = 24.032          !! center latitude
-  phi              = 0.0              !! horizontal coordinate rotation
+  clon             = 121.6160         !! center longitude
+  clat             = 23.7385          !! center latitude
+  phi              = -10.0              !! horizontal coordinate rotation
                                       !- measured clockwise from the north
 
   fq_min           = 0.01             !! minimum freq. for Q-constant model
@@ -107,7 +107,7 @@
   !!   xymoij / xym0dc / llm0ij / llm0dc / xymwij / xymwdc / llmwij / llmwdc
   !! Body force source format:
   !!   xy or ll
-  stf_format       = 'xy'
+  stf_format       = 'llmwdc'
 
   !! Basis source time function
   !! 'boxcar' / 'triangle' / 'herrmann' / 'kupper' / 'cosine' / 'texp'
@@ -153,12 +153,12 @@
   topo_flatten     = .false.          !! Force topography variation to zero (formerly is_flatten)
   munk_profile     = .false.           !! velocity gradient inside the seawater column
   earth_flattening = .false.          !! Earth-flattening tranformation
-  use_topo        = .false.           !! For using topography.
+  use_topo        = .true.           !! For using topography.
   use_user_vp          = .false.
   use_user_rho         = .false.
-  topo_dir         = './test2d_eq/topo_2d.dat'
+  topo_dir         = './test2d_eq/topo.dat'
   vp_model_dir     = '.'
-  vs_model_dir     = './test2d_eq/model_Vp_2d.dat'
+  vs_model_dir     = './test2d_eq/model_Vs_2d.dat'
   rho_model_dir    = '.'
     !! --------------------------------------------------------------------- !!
     !! For uniform velocity model 'uni'

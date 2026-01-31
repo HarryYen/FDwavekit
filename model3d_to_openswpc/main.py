@@ -50,6 +50,7 @@ if __name__ == '__main__':
 
     interp_nx, interp_ny, interp_nz = len(x_arr), len(y_arr), len(z_arr)
     print(interp_nx, interp_ny, interp_nz)
+    print(f'For OpenSWPC input file: {nx}, {ny}, {nz}')
     paramlist = list(itertools.product(range(interp_nx),range(interp_ny),range(interp_nz)))
 
 

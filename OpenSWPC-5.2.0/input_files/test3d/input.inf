@@ -11,8 +11,8 @@
   !! Control
   !!
 
-  title            = 'test01'           !! exe title: used for output filenames
-  odir             = './test01/out'          !! output directory
+  title            = 'test3d'           !! exe title: used for output filenames
+  odir             = './test3d/out'          !! output directory
   ntdec_r          = 50               !! screen report timing (1/cycle)
   strict_mode      = .false.          !! all parameters to be explicitly definied
 
@@ -20,19 +20,19 @@
   !! Model/Grid Size and Area
   !!
 
-  nproc_x          = 4                !! parallelization in x-dir
-  nproc_y          = 5                !! parallelization in x-dir
-  nx               = 400              !! total grid number in x-dir
-  ny               = 400              !! total grid number in y-dir
-  nz               = 680              !! total grid number in z-dir
-  nt               = 7500             !! time step number
+  nproc_x          = 2                !! parallelization in x-dir
+  nproc_y          = 2                !! parallelization in x-dir
+  nx               = 60              !! total grid number in x-dir
+  ny               = 60              !! total grid number in y-dir
+  nz               = 103              !! total grid number in z-dir
+  nt               = 3000             !! time step number
 
-  dx               = 0.15              !! grid width in x-dir
-  dy               = 0.15              !! grid width in y-dir
-  dz               = 0.15              !! grid width in z-dir
-  dt               = 0.008             !! time step width
+  dx               = 1.              !! grid width in x-dir
+  dy               = 1.              !! grid width in y-dir
+  dz               = 1.              !! grid width in z-dir
+  dt               = 0.04            !! time step width
 
-  vcut             = 1.0              !! minimum velocity
+  vcut             = 1.5             !! minimum velocity
                                       !- smaller velocities will be increased
 
   xbeg             = -30.            !! minimum in x-dir
@@ -40,7 +40,7 @@
   zbeg             = -2.1            !! minimum in z-dir
   tbeg             = 0              !! start time
 
-  clon             = 121.710         !! center longitude
+  clon             = 121.70         !! center longitude
   clat             = 24.735          !! center latitude
   phi              = 0.0              !! horizontal coordinate rotation
                                       !- measured clockwise from the north
@@ -78,7 +78,7 @@
   x0_yz            =  0.0             !! x-value for yz cross section
   y0_xz            =  0.0             !! y-value for xz cross section
 
-  ntdec_s          = 33                !! time decimation of snapshot
+  ntdec_s          = 12                !! time decimation of snapshot
                                       !- (specify 1 for no decimation)
 
   idec             = 1                !! x-decimation for snapshot
@@ -107,13 +107,13 @@
   !!   xymoij / xym0dc / llm0ij / llm0dc / xymwij / xymwdc / llmwij / llmwdc
   !! Body force source format:
   !!   xy or ll
-  stf_format       = 'xym0dc'
+  stf_format       = 'xymwdc'
 
   !! Basis source time function
   !! 'boxcar' / 'triangle' / 'herrmann' / 'kupper' / 'cosine' / 'texp'
   stftype          = 'kupper'
 
-  fn_stf           = "./test01/source.dat"   !! Source grid file name
+  fn_stf           = "./test3d/source.dat"   !! Source grid file name
 
   !! source depth correction
   !! 'asis':use z value, 'bd{i}': i-th boundary (i=0...9)
@@ -141,7 +141,7 @@
   !!
 
   abc_type         = 'pml'            !! 'pml' or 'cerjan'
-  na               = 15               !! absorbing layer thickness
+  na               = 5               !! absorbing layer thickness
   stabilize_pml    = .false.           !! avoid low-v layer in PML region
 
   !! ----------------------------------------------------------------------- !!
@@ -153,12 +153,12 @@
   topo_flatten     = .false.          !! Force topography variation to zero (formerly is_flatten)
   munk_profile     = .false.           !! velocity gradient inside the seawater column
   earth_flattening = .false.          !! Earth-flattening tranformation
-  zero_topo        = .true.           !! For zero topography.
-  user_Vp          = .true.
-  user_rho         = .false.
-  topo_dir         = './test01/3dtopo_re.xyz'
-  vp_model_dir     = '../dataset/my_vmodel/3d_model_vp.dat'
-  vs_model_dir     = '../dataset/my_vmodel/3d_model_vs.dat'
+  use_topo        = .true.           !! For using topography.
+  use_user_vp          = .false.
+  use_user_rho         = .false.
+  topo_dir         = './test3d/3dtopo_re.xyz'
+  vp_model_dir     = 'test3d/3d_model_vp.dat'
+  vs_model_dir     = 'test3d/3d_model_vs.dat'
   rho_model_dir    = '../dataset/rhomodel/model16.rho'
     !! --------------------------------------------------------------------- !!
     !! For uniform velocity model 'uni'

@@ -1,5 +1,12 @@
 # FDwavekit
 
+## install
+
+```bash
+git clone git@github.com:HarryYen/FDwavekit.git
+```
+
+
 ## Setup environments
 
 1) Create the base FDwavekit environment from the repo root:

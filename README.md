@@ -1,6 +1,6 @@
 # FDwavekit
 
-## install
+## Install
 
 ```bash
 git clone git@github.com:HarryYen/FDwavekit.git
@@ -12,6 +12,7 @@ git clone git@github.com:HarryYen/FDwavekit.git
 1) Create the base FDwavekit environment from the repo root:
 
 ```bash
+cd FDwavekit
 conda env create -f environment.yml
 ```
 
